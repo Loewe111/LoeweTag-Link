@@ -13,8 +13,8 @@ class messageTCP
     messageTCP();
     ~messageTCP();
     void send(IPAddress ip, char* data);
-    void send(IPAddress ip, const char* data);
-    char* receive(WiFiServer* server, IPAddress* sender, int size);
+    void send(IPAddress ip, const uint8_t* data, size_t size);
+    uint8_t* receive(WiFiServer* server);
 };
 
 #endif

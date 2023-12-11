@@ -18,29 +18,43 @@ void messageTCP::send(IPAddress ip, char* data)
   _client.stop();
 }
 
-void messageTCP::send(IPAddress ip, const char* data)
+void messageTCP::send(IPAddress ip, const uint8_t* data, size_t size)
 {
   _client.connect(ip, 7084);
-  _client.print(data);
+  _client.write(data, size);
   _client.stop();
 }
 
-char* messageTCP::receive(WiFiServer* server, IPAddress* sender, int size)
+uint8_t *messageTCP::receive(WiFiServer *server)
 {
-  char* data = new char[size];
   WiFiClient client = server->available(); // Get the client
-  if (!client) return data; // Return if no client is connected
-  while (client.connected()) // While the client is connected
+  while (client.connected() && !client.available())
   {
-    if (client.available()) // If the client has data
-    {
-      int bytes = client.readBytesUntil('\n', data, size); // Read the data
-      data[bytes] = '\0'; // Add a null terminator
-      break; // Break the loop
-    }
+    yield();
   }
-  *sender = client.remoteIP(); // Get the IP address of the client
+  if (!client.connected())
+  {
+    return NULL;
+  }
+
+  uint8_t dataSize = client.read();      // Read the size of the data
+  uint8_t *data = new uint8_t[dataSize]; // Create a new array with the size of the data
+  data[0] = dataSize;                    // Set the first byte of the array to the size of the data
+
+  for (int i = 1; i < dataSize; i++) // Read the data
+  {
+    while (!client.available() && client.connected()) // Wait for data to be available
+    {
+      yield();
+    }
+    if (!client.connected())
+    {
+      return NULL;
+    }
+    data[i] = client.read(); // Read the data
+  }
+
   client.stop(); // Stop the client
-  return data; // Return if client is connected
+  return data;
 }
 
