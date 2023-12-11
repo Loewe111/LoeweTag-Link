@@ -5,7 +5,7 @@
 #include <ArduinoJson.h>
 
 #include "messageTCP.h"
-#include "messageHandle.h"
+#include "SerialManager.h"
 #include "deviceManager.h"
 
 // User settings
@@ -28,7 +28,7 @@ WiFiClient client;
 
 messageTCP message;
 deviceManager devices;
-messageHandle handle;
+SerialManager serialHandle;
 
 DynamicJsonDocument command(JSON_BUFFER_SIZE);
 DynamicJsonDocument response(JSON_BUFFER_SIZE);
@@ -114,7 +114,7 @@ void loop() {
 
   // Serial Receive
   if(Serial.available()) { // Serial input
-    // char* input = handle.readSerial(CHAR_BUFFER_SIZE);
+    // char* input = serialHandle.readSerial(CHAR_BUFFER_SIZE);
     DeserializationError err = deserializeJson(command, Serial);
 
     response.clear(); // Clear the response
@@ -122,9 +122,9 @@ void loop() {
       response["type"] = "error";
       response["message"] = err.c_str();
       // response["content"] = input;
-    } else if(handle.isType(command, "get_devices")) { // Get devices
+    } else if(serialHandle.isType(command, "get_devices")) { // Get devices
       sendDevices();
-    } else if(handle.isType(command, "send")) { // Send message
+    } else if(serialHandle.isType(command, "send")) { // Send message
       String str = command["content"];
       str += '\n';
       const char* data = str.c_str();
@@ -137,7 +137,7 @@ void loop() {
         ip.fromString(command["ip"].as<String>());
         message.send(ip, data);
       }
-    } else if(handle.isType(command, "information")) {
+    } else if(serialHandle.isType(command, "information")) {
       sendInfo();
       for(int i=0; i<deviceCount; i++) {
         message.send(ips[i], "{\"type\":\"information\"}\n"); 

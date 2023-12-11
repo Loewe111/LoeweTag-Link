@@ -1,14 +1,14 @@
-#include "messageHandle.h"
+#include "SerialManager.h"
 
-messageHandle::messageHandle(/* args */)
+SerialManager::SerialManager(/* args */)
 {
 }
 
-messageHandle::~messageHandle()
+SerialManager::~SerialManager()
 {
 }
 
-char* messageHandle::readSerial(int bufferSize) {
+char* SerialManager::readSerial(int bufferSize) {
   char* buffer = new char[bufferSize];
   int index = 0;
   while (index < bufferSize - 1) {
@@ -27,11 +27,11 @@ char* messageHandle::readSerial(int bufferSize) {
   return buffer;
 }
 
-bool messageHandle::sendSerial(char* message) {
+bool SerialManager::sendSerial(char* message) {
   Serial.println(message);
   return true;
 }
 
-bool messageHandle::isType(DynamicJsonDocument& json, const char* type) {
+bool SerialManager::isType(DynamicJsonDocument& json, const char* type) {
   return json.containsKey("type") && json["type"] == type;
 }

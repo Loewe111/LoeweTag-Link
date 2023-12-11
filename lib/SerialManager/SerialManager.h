@@ -1,16 +1,16 @@
-#ifndef MESSAGE_HANDLE_H
-#define MESSAGE_HANDLE_H
+#ifndef SERIAL_MANAGER_H
+#define SERIAL_MANAGER_H
 
 #include "Arduino.h"
 #include "ArduinoJson.h"
 
-class messageHandle
+class SerialManager
 {
 private:
   /* data */
 public:
-  messageHandle(/* args */);
-  ~messageHandle();
+  SerialManager(/* args */);
+  ~SerialManager();
   char* readSerial(int bufferSize);
   bool sendSerial(char* message);
   bool isType(DynamicJsonDocument& json, const char* type);
